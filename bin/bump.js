@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 const fs = require('fs');
+const path = require('path');
 const plist = require('plist');
 const pkg = require(path.resolve(process.cwd(), './package.json'));
 const { root } = require('../lib/shared');
