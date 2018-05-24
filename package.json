@@ -1,0 +1,25 @@
+{
+  "name": "bg-ci-tools",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./lib/shared.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "bgci-build-ios": "./bin/build-ios.js",
+    "bgci-build-android": "./bin/build-android.js",
+    "bgci-deploy-ios": "./bin/deploy-ios.js",
+    "bgci-deploy-android": "./bin/deploy-android.js",
+    "bgci-bump": "./bin/bump.js"
+  },
+  "preferGlobal": true,
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "glob": "^7.1.2",
+    "playup": "^1.1.0",
+    "plist": "^3.0.1",
+    "semver-parser": "^2.0.0"
+  }
+}
