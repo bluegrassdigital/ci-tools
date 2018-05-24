@@ -9,7 +9,7 @@ const { parseSemVer } = require('semver-parser');
 
 const version = parseSemVer(pkg.version);
 
-const { BUILD_NUMBER } = process.env;
+const { BUILD_NUMBER, APP_NAME } = process.env;
 
 const getAndroidVersionCode = v => {
   const {
@@ -19,10 +19,10 @@ const getAndroidVersionCode = v => {
   return major * 1000000 + minor * 10000 + patch * 100 + Number(BUILD_NUMBER);
 };
 
-const obj = plist.parse(fs.readFileSync(`${root}/ios/${pkg.name}/Info.plist`, 'utf8'));
+const obj = plist.parse(fs.readFileSync(`${root}/ios/${APP_NAME || pkg.name}/Info.plist`, 'utf8'));
 obj.CFBundleVersion = `${pkg.version}.${BUILD_NUMBER}`;
 obj.CFBundleShortVersionString = pkg.version;
-fs.writeFileSync(`${root}/ios/${pkg.name}/Info.plist`, plist.build(obj));
+fs.writeFileSync(`${root}/ios/${APP_NAME || pkg.name}/Info.plist`, plist.build(obj));
 
 const gradlePath = `${root}/android/app/build.gradle`;
 
