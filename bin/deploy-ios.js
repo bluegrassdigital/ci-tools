@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const { exec, root, iosPaths } = require('.../lib/shared');
+const { exec, root, iosPaths } = require('../lib/shared');
 
 const { BINARY_PATH, SCHEME } = iosPaths;
 
