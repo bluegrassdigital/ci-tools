@@ -1,17 +1,20 @@
 #!/usr/bin/env node
 
-const { root } = require('../lib/shared');
 const playup = require('playup');
 const fs = require('fs');
 const glob = require('glob');
 
-const jsonFile = fs.readFileSync(process.env['DEPLOYMENT_JSON'], 'utf8');
+const { DEPLOYMENT_JSON, APK_FOLDER } = process.env;
+
+const jsonFile = fs.readFileSync(DEPLOYMENT_JSON, 'utf8');
 if (!jsonFile) throw new Error('No deployment key');
 const key = JSON.parse(jsonFile);
 
 const publisher = playup(key);
 
-glob(`${root}/android/app/build/outputs/apk/!(*-unsigned).apk`, function(error, files) {
+const apkFolder = APK_FOLDER || `${process.cwd()}/android/app/build/outputs/apk`
+
+glob(`${apkFolder}/!(*-unsigned).apk`, function(error, files) {
   if (!files || !files.length) throw new Error('No apks');
   console.log(JSON.stringify(files))
   publisher.upload(files, {
