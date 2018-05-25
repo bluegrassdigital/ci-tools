@@ -52,12 +52,7 @@ const buildIPA = () =>
 -archivePath "${ARCHIVE_PATH}" \
 -exportPath "${BINARY_PATH}" \
 -exportOptionsPlist "${EXPORT_PLIST}" \
--quiet \
-CODE_SIGN_STYLE="Manual" \
-DEVELOPMENT_TEAM="${TEAM_ID}" \
-PROVISIONING_PROFILE_SPECIFIER="${PROVISIONING_PROFILE}" \
-PRODUCT_BUNDLE_IDENTIFIER=${PRODUCT_BUNDLE_IDENTIFIER} \
-CODE_SIGN_IDENTITY="${CODE_SIGNING_IDENTITY}"`;
+-quiet`;
 
 const start = Date.now();
 console.log(`Building IPA`)
