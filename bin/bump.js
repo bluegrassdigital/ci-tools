@@ -37,3 +37,4 @@ fs.writeFileSync(`${root}/version.properties`, `NEW_BUILD_VERSION=${useVersion}.
 PKG_VERSION=${useVersion}
 `);
 
+console.log(`Updated version to ${useVersion}.${BUILD_NUMBER}`);

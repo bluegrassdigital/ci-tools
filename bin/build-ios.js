@@ -61,6 +61,9 @@ try {
 } catch (e) {
 
 }
+
+console.log(`Found ${workspace ? 'workspace' : 'project'} at ${workspace ? WORKSPACE_PATH : PROJECT_PATH}`);
+
 exec(archive(), {
   RCT_NO_LAUNCH_PACKAGER: 1,
 });

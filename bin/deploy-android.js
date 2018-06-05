@@ -25,4 +25,7 @@ glob(`${apkFolder}/!(*-unsigned).apk`, function(error, files) {
   });
 });
 
+process.on("unhandledRejection", (reason, promise) => {
+  throw reason;
+});
 
