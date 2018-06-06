@@ -32,8 +32,8 @@ const archive = () =>
 -${workspace ? 'workspace' : 'project'} "${workspace ? WORKSPACE_PATH : PROJECT_PATH}" \
 -scheme ${SCHEME} \
 -sdk iphoneos \
-archive -archivePath "${ARCHIVE_PATH}" \
 -derivedDataPath "${DERIVED_DATA_DIR}" \
+archive -archivePath "${ARCHIVE_PATH}" \
 CODE_SIGN_STYLE="Manual" \
 BUILD_DIR="${BUILD_DIR}" \
 DERIVED_DATA_DIR="${DERIVED_DATA_DIR}" \
