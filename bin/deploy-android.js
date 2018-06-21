@@ -16,7 +16,7 @@ const apkFolder = APK_FOLDER || `${process.cwd()}/android/app/build/outputs/apk`
 
 glob(`${apkFolder}/!(*-unsigned).apk`, function(error, files) {
   if (!files || !files.length) throw new Error('No apks');
-  console.log(JSON.stringify(files))
+  console.dir(files)
   publisher.upload(files, {
     recentChanges: {},
     track: 'alpha',

@@ -4,7 +4,7 @@ const { exec, root, iosPaths } = require('../lib/shared');
 const fs = require('fs');
 const path = require('path');
 
-const { PROVISIONING_PROFILE, CODE_SIGNING_IDENTITY, PRODUCT_BUNDLE_IDENTIFIER, TEAM_ID, PROVISIONING_PROFILE_NAME } = process.env;
+const { PROVISIONING_PROFILE, CODE_SIGNING_IDENTITY, PRODUCT_BUNDLE_IDENTIFIER, TEAM_ID, PROVISIONING_PROFILE_NAME, DEPLOYMENT_METHOD } = process.env;
 
 const {
   BUILD_DIR,
@@ -75,7 +75,7 @@ fs.writeFileSync(
 <plist version="1.0">
 <dict>
   <key>method</key>
-  <string>app-store</string>
+  <string>${DEPLOYMENT_METHOD || 'app-store'}</string>
   <key>teamID</key>
   <string>${TEAM_ID}</string>
   <key>provisioningProfiles</key>
