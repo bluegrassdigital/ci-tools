@@ -74,6 +74,7 @@ async function getProvisioningProfileDetails(profileName, profileId) {
         continue;
       }
     }
+    throw new Error(`No matching provisioning profiles found for ${profileName}`);
   } catch (error) {
     console.log(error);
     throw error;
