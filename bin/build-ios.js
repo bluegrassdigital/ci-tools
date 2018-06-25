@@ -39,8 +39,6 @@ try {
 
 }
 
-const re = /^.*CN=(.*?)\/.*$/gm
-
 function getProvisioningProfileDetails(profileName, profileId) {
   return new Promise((resolve, reject) => {
     glob(`${USER_HOME ? USER_HOME : os.homedir()}/Library/MobileDevice/Provisioning\ Profiles/${profileId ? profileId : '*'}.mobileprovision`, (error, files) => {
@@ -53,6 +51,7 @@ function getProvisioningProfileDetails(profileName, profileId) {
           const cert = new Buffer(content.DeveloperCertificates[0], 'base64');
           openssl.exec('x509', cert, {inform: 'DER', subject: true}, function(err, buffer) {
               if (err) reject(err);
+              const re = /.*CN=(.*?)\/.*/gm
               const certName = re.exec(buffer.toString())
               resolve({
                 CodeSigningIdentity: certName[1],
@@ -82,8 +81,7 @@ glob(`${searchPath}/*.{xcworkspace,xcodeproj}`, async (error, files) => {
 
   const workspace = useFile.ext === '.xcworkspace';
 
-  console.log(`${workspace ? 'Workspace' : 'Project'} found at ${useFile.full}`);
-  const ls = spawn('xcodebuild', [
+  const buildArgs = [
     '-quiet',
     '-configuration', 'Release',
     workspace ? '-workspace' : '-project', `${useFile.full}`,
@@ -97,7 +95,12 @@ glob(`${searchPath}/*.{xcworkspace,xcodeproj}`, async (error, files) => {
     `PROVISIONING_PROFILE_SPECIFIER="${UUID}"`,
     `PRODUCT_BUNDLE_IDENTIFIER="${PRODUCT_BUNDLE_IDENTIFIER}"`,
     `CODE_SIGN_IDENTITY="${CodeSigningIdentity}"`,
-  ], {
+  ];
+
+  console.log(`Building ${workspace ? 'workspace' : 'wroject'} found at ${useFile.full} using command:`);
+
+  console.log(buildArgs.join(' '));
+  const ls = spawn('xcodebuild', buildArgs, {
     env: Object.assign({}, process.env, {
       RCT_NO_LAUNCH_PACKAGER: 1,
     }),
