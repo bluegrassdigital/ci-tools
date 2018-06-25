@@ -1,12 +1,14 @@
 #!/usr/bin/env node
 
 const { exec, root, iosPaths } = require('../lib/shared');
+const { promisify } = require('util');
 const fs = require('fs');
 const path = require('path');
 const spawn = require('child_process').spawn;
 const plist = require('plist');
 const os = require('os');
 const openssl = require('openssl-wrapper');
+const moment = require('moment');
 
 const { PRODUCT_BUNDLE_IDENTIFIER, PROVISIONING_PROFILE_NAME, PROVISIONING_PROFILE, DEPLOYMENT_METHOD, MANIFEST_DOWNLOAD_URL, MANIFEST_DISPLAY_IMAGE_URL, USER_HOME, MANIFEST_FULL_IMAGE_URL, IOS_SEARCH_DIR } = process.env;
 
@@ -39,33 +41,44 @@ try {
 
 }
 
-function getProvisioningProfileDetails(profileName, profileId) {
-  return new Promise((resolve, reject) => {
-    glob(`${USER_HOME ? USER_HOME : os.homedir()}/Library/MobileDevice/Provisioning\ Profiles/${profileId ? profileId : '*'}.mobileprovision`, (error, files) => {
-      if (error) reject(err);
-      for (let i = 0; i < files.length; i++) {
-        openssl.exec('smime', {inform: 'DER', verify: true, noverify: true, in: files[i]}, function(err, buffer) {
-          if (err) reject(err);
-          const content = plist.parse(buffer.toString('utf8'));
-          if (content.Name !== profileName) return;
-          const cert = new Buffer(content.DeveloperCertificates[0], 'base64');
-          openssl.exec('x509', cert, {inform: 'DER', subject: true}, function(err, buffer) {
-              if (err) reject(err);
-              const re = /.*CN=(.*?)\/.*/gm
-              const certName = re.exec(buffer.toString())
-              resolve({
-                CodeSigningIdentity: certName[1],
-                TeamName: content.TeamName,
-                UUID: content.UUID,
-                TeamID: content.TeamIdentifier[0],
-              })
-            });
-          });
-      }
-    })
-  });
-}
+const opensslExecPromise = promisify(openssl.exec);
 
+const globPromise = promisify(glob);
+
+async function getProvisioningProfileDetails(profileName, profileId) {
+  try {
+    const files = await globPromise(`${USER_HOME ? USER_HOME : os.homedir()}/Library/MobileDevice/Provisioning\ Profiles/${profileId ? profileId : '*'}.mobileprovision`);
+
+    for (let i = 0; i < files.length; i++) {
+      try {
+        const fileBuffer = await opensslExecPromise('smime', {inform: 'DER', verify: true, noverify: true, in: files[i]});
+        const content = plist.parse(fileBuffer.toString('utf8'));
+        if (content.Name !== profileName) continue;
+        console.log(files[i]);
+        if (moment(content.ExpirationDate).isBefore(moment())) {
+          console.log(`A matched provisioning profile (${content.UUID}) for "${profileName}" expired on ${content.ExpirationDate}, skipping`);
+          continue;
+        }
+        const cert = new Buffer(content.DeveloperCertificates[0], 'base64');
+        const certBuffer = await opensslExecPromise('x509', cert, {inform: 'DER', subject: true});
+        const re = /.*CN=(.*?)\/.*/gm
+        const certName = re.exec(certBuffer.toString())
+        return {
+          CodeSigningIdentity: certName[1],
+          TeamName: content.TeamName,
+          UUID: content.UUID,
+          TeamID: content.TeamIdentifier[0],
+        }
+      } catch (error) {
+        console.log(error);
+        continue;
+      }
+    }
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
 
 glob(`${searchPath}/*.{xcworkspace,xcodeproj}`, async (error, files) => {
   if (error) throw error;
