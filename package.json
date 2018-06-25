@@ -18,6 +18,7 @@
   "license": "ISC",
   "dependencies": {
     "glob": "^7.1.2",
+    "openssl-wrapper": "^0.3.4",
     "playup": "^1.1.0",
     "plist": "^3.0.1",
     "semver-parser": "^2.0.0"
