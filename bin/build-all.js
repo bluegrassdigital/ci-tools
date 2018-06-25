@@ -6,3 +6,6 @@ const buildIOS = require('../lib/ios/build');
 buildAndroid();
 buildIOS();
 
+process.on('unhandledRejection', error => {
+  throw error;
+});

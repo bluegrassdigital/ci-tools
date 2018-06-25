@@ -2,5 +2,8 @@
 
 const build = require('../lib/ios/build');
 
-build()
-.catch(e => console.log(e))
+build();
+
+process.on('unhandledRejection', error => {
+  throw error;
+});
