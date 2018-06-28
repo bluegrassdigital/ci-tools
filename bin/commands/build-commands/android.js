@@ -17,6 +17,7 @@ exports.builder = function (yargs) {
   }
 
   return yargs
+    .describe('gradleFlags', 'Extra gradle flags')
     .describe('androidSearchPath', 'Directory to search in for android gradle')
     .check(argv => {
       const checkExists = fs.existsSync(path.resolve(argv.androidSearchPath, './gradlew'))
