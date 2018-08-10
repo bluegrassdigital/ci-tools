@@ -11,7 +11,7 @@ exports.builder = function (yargs) {
     .normalize('apkPath')
     .describe('deploymentKey', 'Path to your google play service account deployment json key')
     .coerce('deploymentKey', function (arg) {
-      return JSON.parse(fs.readFileSync(path.resolve(arg), 'utf8'))
+      return JSON.parse(fs.readFileSync(arg, 'utf8'))
     })
     .demandOption(['deploymentKey'])
 }

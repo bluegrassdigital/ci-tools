@@ -28,6 +28,15 @@ exports.builder = function (yargs) {
     .default('method', 'app-store')
     .choices('method', ['app-store', 'ad-hoc', 'enterprise'])
     .describe('method', 'Deployment method to use in export options.')
+    .describe('manifestDownloadUrl', 'For enterprise and ad hoc deployments. Must be a full https path')
+    .describe('manifestDisplayImageUrl', 'For enterprise and ad hoc deployments. Must be a full https path')
+    .describe('manifestFullImageUrl', 'For enterprise and ad hoc deployments. Must be a full https path')
+    .check(argv => {
+      const needsManifest = /^(enterprise|ad-hoc)$/.test(argv.method);
+      if (needsManifest && !argv.manifestDownloadUrl) throw new Error(`Manifest download url is required for ${argv.method} deployments`)
+      if (needsManifest && !argv.manifestFullImageUrl && !argv.manifestDisplayImageUrl) throw new Error('Either manifestFullImageUrl or manifestDisplayImageUrl is required')
+      return true;
+    })
     .describe('bundleId', 'Bundle identifier to use for both the build and in export options')
     .default(extraDefaults)
     .demandOption(['profile', 'bundleId', ...extraDemands])
